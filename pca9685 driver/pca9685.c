@@ -52,7 +52,7 @@ void Pca9685_ctor(Pca9685 *const me, uint32_t address){
 	}
 
 	/*initializes I2C to either a user specified or default address*/
-	
+	Pca9685_set_i2c_addr(me, address);
 
 	//TODO As initilization is performed when created or occasionally,
 	/*move to seperate function.*/	
@@ -85,7 +85,7 @@ void Pca9685_ctor(Pca9685 *const me, uint32_t address){
 }
 
 /*Set I2C Address method*/
-void AtlasI2C_set_i2c_addr(AtlasI2C *const me, uint32_t addr){
+void Pca9685_set_i2c_addr(AtlasI2C *const me, uint32_t addr){
 	/*Set the I2C to the slave specified by the address
 	The commands for I2C dev using the ioctl functions
 	are specified in the i2c-dev.h file from i2c-tools*/
@@ -94,7 +94,7 @@ void AtlasI2C_set_i2c_addr(AtlasI2C *const me, uint32_t addr){
 
 	//printf("set I2C Address Method...\n");
 
-	if (ioctl(me->filerd_i2c, 0x703, addr) < 0)
+	if (ioctl(me->filerd_i2c, I2C_SLAVE, addr) < 0)
 	{
 		//printf("Failed to acquire bus access and/or talk to slave.\n");
 		//ERROR HANDLING; you can check errno to see what went wrong
@@ -111,21 +111,16 @@ void AtlasI2C_set_i2c_addr(AtlasI2C *const me, uint32_t addr){
 }
 
 /*Write to I2C slave device*/
-int AtlasI2C_write(AtlasI2C *const me, char* cmd){
+int Pca9685_write(AtlasI2C *const me, uint8_t reg, uint8_t val){
 
 	//printf("I2C Write Method...\n");
 	
-	char *zero = "00";
-	char cmd_str[10];
-	strcpy(cmd_str, cmd);
-	strcat(cmd_str, zero);
-	//strcat(cmd, "00");
+	//char *zero = "00";
+	uint8_t buff[2]={0};
+	buff[0]=reg;
+	buff[1]=val;
 	
-	//printf("After concat...\n");
-	int length = 10;//strlen(cmd_str);
-	if it doesn't match then an error occurred (e.g. no response from the device)*/
-
-	if (write(me->filewr_i2c, cmd_str, length) != length)		
+	if (write(me->filewr_i2c, buff, 2) != 2)		
 	{
 		/* ERROR HANDLING: i2c transaction failed */
 		/*printf("Failed to write to the i2c bus in write method.\n");
@@ -201,12 +196,6 @@ void pca9685_close(AtlasI2C *const me){
 		//printf("Failed to close the i2c bus\n");
 		
 	}
-}
-
-
-
-void AtlasI2C_list_i2c_devices(AtlasI2C *const me, char* string){
-/*TODO*/
 }
 
 char* Pca9685_set_pwm(Pca9685 *const me, uint8_t channel, uint8_t value){
