@@ -53,35 +53,6 @@ void Pca9685_ctor(Pca9685 *const me, uint32_t address){
 
 	/*initializes I2C to either a user specified or default address*/
 	Pca9685_set_i2c_addr(me, address);
-
-	//TODO As initilization is performed when created or occasionally,
-	/*move to seperate function.*/	
-	Pca9685_set_i2c_addr(me, address);
-	/*Write mode 1 address*/
-	Pca9685_write(me,MODE1,0b00110001);
-	//delay 50us
-	sleep(5);
-	// PWM frequency PRE_SCALE address
-	Pca9685_write(me,0xfe,0x04);
-	//delay 50us
-	sleep(5);
-
-	/*Write mode 1 address*/
-	// Set to our prefered mode[ Reset, INT_CLK, Auto-Increment, Normal Mode] 
-	Pca9685_write(me,MODE1,0xa1);
-	//delay 50us
-	sleep(5);
-	
-	/*Write mode 2 address
-	Set to our prefered mode[Output logic state not inverted, Outputs change on STOP, 
-	totem pole structure, When OE = 1 (output drivers not enabled), LEDn = 0]*/
-	Pca9685_write(me,MODE1,0b00000100);
-	//delay 50us
-	sleep(5);
-	
-	/*Finished Initializing the PCA9685 IC*/
-	
-	
 }
 
 /*Set I2C Address method*/
