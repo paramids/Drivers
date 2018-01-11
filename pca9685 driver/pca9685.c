@@ -16,8 +16,7 @@ int errnum;//For Error Handling
 /*Static variables for I2C communications*/
 uint32_t long_timeout = 2;
 uint16_t short_timeout = 1;
-const char *file_read = (char*)"/dev/i2c-1"; //default bus
-const char *file_write = (char*)"/dev/i2c-1"	;//default bus
+
 
 uint32_t default_address = 0x40;		//Default slave address
 

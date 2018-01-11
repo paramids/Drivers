@@ -35,6 +35,9 @@
 #define INVRT 0x10
 #define OUTDRV 0x04
 
+const char *file_read = (char*)"/dev/i2c-1"; //default bus
+const char *file_write = (char*)"/dev/i2c-1"	;//default bus
+
 typedef struct{
 	int filerd_pca9685; //file read
 	int filewr_pca9685; //file write
