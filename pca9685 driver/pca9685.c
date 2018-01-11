@@ -204,8 +204,22 @@ void AtlasI2C_close(AtlasI2C *const me){
 	}
 }
 
+
+
 void AtlasI2C_list_i2c_devices(AtlasI2C *const me, char* string){
 /*TODO*/
+}
+
+char* Pca9685_set_pwm(Pca9685 *const me, uint8_t channel, uint8_t value){
+		
+	Pca9685_write(me,LED0 + 4 * channel, value);
+	return NULL;
+}
+
+char* Pca9685_set_all_pwm(Pca9685 *const me, uint8_t channel, uint8_t value){
+		
+	Pca9685_write(me,0xfc, value);
+	return NULL;
 }
 
 
