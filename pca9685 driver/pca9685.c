@@ -189,14 +189,14 @@ char* Pca9685_read(AtlasI2C *const me,uint8_t num_bytes){
 }
 
 
-void AtlasI2C_close(AtlasI2C *const me){
-	if ((me->filerd_i2c = close(me->filerd_i2c)) < 0)
+void pca9685_close(AtlasI2C *const me){
+	if ((me->filerd_i2c = fclose(me->filerd_i2c)) < 0)
 	{
 		//ERROR HANDLING: you can check errno to see what went wrong
 		//printf("Failed to close the i2c bus\n");
 		
 	}
-	if ((me->filewr_i2c = close(me->filewr_i2c)) < 0)
+	if ((me->filewr_i2c = fclose(me->filewr_i2c)) < 0)
 	{
 		//ERROR HANDLING: you can check errno to see what went wrong
 		//printf("Failed to close the i2c bus\n");
