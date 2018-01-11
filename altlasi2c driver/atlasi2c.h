@@ -13,6 +13,8 @@
 extern int errno ;
 
 
+const char *file_read = (char*)"/dev/i2c-1"; //default bus
+const char *file_write = (char*)"/dev/i2c-1";//default bus
 
 
 typedef struct{
