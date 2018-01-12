@@ -53,6 +53,7 @@ void Pca9685_ctor(Pca9685 *const me, uint32_t address){
 
 	/*initializes I2C to either a user specified or default address*/
 	Pca9685_set_i2c_addr(me, address);
+	Pca9685_init(me, address);
 }
 
 /*Set I2C Address method*/
@@ -82,37 +83,34 @@ void Pca9685_set_i2c_addr(AtlasI2C *const me, uint32_t addr){
 }
 
 /*Initialize the pca9685 module*/
-void Pca9685_init(void){
-	/*Write mode 1 address*/
+void Pca9685_init(Pca9685 *const me, uint32_t addr){
+	/*Write mode 1 address
+	Respond to ALLCALL address, goto low power mode, Register Autoincrement Enabled*/
 	Pca9685_write(me,MODE1,0b00110001);
 	//delay 50us
-	sleep(5);
+	usleep(500);
 	// PWM frequency PRE_SCALE address
 	Pca9685_write(me,0xfe,0x04);
 	//delay 50us
-	sleep(5);
+	usleep(500);
 
 	/*Write mode 1 address*/
 	// Set to our prefered mode[ Reset, INT_CLK, Auto-Increment, Normal Mode] 
 	Pca9685_write(me,MODE1,0xa1);
 	//delay 50us
-	sleep(5);
+	usleep(500);
 	
 	/*Write mode 2 address
 	Set to our prefered mode[Output logic state not inverted, Outputs change on STOP, 
 	totem pole structure, When OE = 1 (output drivers not enabled), LEDn = 0]*/
 	Pca9685_write(me,MODE1,0b00000100);
 	//delay 50us
-	sleep(5);
+	usleep(500);
 		
 }
 
 /*Write to I2C slave device*/
-int Pca9685_write(AtlasI2C *const me, uint8_t reg, uint8_t val){
-
-	//printf("I2C Write Method...\n");
-	
-	//char *zero = "00";
+int Pca9685_write(Pca9685 *const me, uint8_t reg, uint8_t val){
 	uint8_t buff[2]={0};
 	buff[0]=reg;
 	buff[1]=val;
@@ -132,7 +130,7 @@ int Pca9685_write(AtlasI2C *const me, uint8_t reg, uint8_t val){
 }	
 
 /*Read from I2C slave device*/
-char* Pca9685_read(AtlasI2C *const me,uint8_t num_bytes){
+char* Pca9685_read(Pca9685 *const me,uint8_t num_bytes){
 	char buffer[31];
 	memset(buffer, '\0', sizeof(buffer));
 	const char s[2] = "\0";
@@ -141,8 +139,8 @@ char* Pca9685_read(AtlasI2C *const me,uint8_t num_bytes){
 	memset(me->res, '\0', sizeof(me->res));
 	
 	//----- READ BYTES -----
-	if (read(me->filerd_i2c, buffer, num_bytes) != num_bytes)//read() returns the number of bytes actually read, if it doesn't match then an error 								occurred (e.g. no response from the device)
-	{
+ 							
+	if (read(me->filerd_i2c, buffer, num_bytes) != num_bytes){
 		//ERROR HANDLING: i2c transaction failed
 		/*printf("Failed to read from the i2c bus.\n");
 		errnum = errno;
@@ -180,7 +178,7 @@ char* Pca9685_read(AtlasI2C *const me,uint8_t num_bytes){
 }
 
 
-void pca9685_close(AtlasI2C *const me){
+void pca9685_close(Pca9685 *const me){
 	if ((me->filerd_i2c = fclose(me->filerd_i2c)) < 0)
 	{
 		//ERROR HANDLING: you can check errno to see what went wrong
