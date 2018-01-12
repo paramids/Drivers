@@ -57,7 +57,7 @@ void Pca9685_ctor(Pca9685 *const me, uint32_t address){
 }
 
 /*Set I2C Address method*/
-void Pca9685_set_i2c_addr(AtlasI2C *const me, uint32_t addr){
+void Pca9685_set_i2c_addr(Pca9685 *const me, uint32_t addr){
 	/*Set the I2C to the slave specified by the address
 	The commands for I2C dev using the ioctl functions
 	are specified in the i2c-dev.h file from i2c-tools*/
@@ -66,13 +66,13 @@ void Pca9685_set_i2c_addr(AtlasI2C *const me, uint32_t addr){
 
 	//printf("set I2C Address Method...\n");
 
-	if (ioctl(me->filerd_i2c, I2C_SLAVE, addr) < 0)
+	if (ioctl(me->filerd_pca9685, I2C_SLAVE, addr) < 0)
 	{
 		//printf("Failed to acquire bus access and/or talk to slave.\n");
 		//ERROR HANDLING; you can check errno to see what went wrong
 		return;
 	}
-	if (ioctl(me->filewr_i2c, 0x703, addr) < 0)
+	if (ioctl(me->filewr_pca9685, 0x703, addr) < 0)
 	{
 		//printf("Failed to acquire bus access and/or talk to slave.\n");
 		//ERROR HANDLING; you can check errno to see what went wrong
@@ -115,7 +115,7 @@ int Pca9685_write(Pca9685 *const me, uint8_t reg, uint8_t val){
 	buff[0]=reg;
 	buff[1]=val;
 	
-	if (write(me->filewr_i2c, buff, 2) != 2)		
+	if (write(me->filewr_pca9685, buff, 2) != 2)		
 	{
 		/* ERROR HANDLING: i2c transaction failed */
 		/*printf("Failed to write to the i2c bus in write method.\n");
@@ -140,7 +140,7 @@ char* Pca9685_read(Pca9685 *const me,uint8_t num_bytes){
 	
 	//----- READ BYTES -----
  							
-	if (read(me->filerd_i2c, buffer, num_bytes) != num_bytes){
+	if (read(me->filerd_pca9685, buffer, num_bytes) != num_bytes){
 		//ERROR HANDLING: i2c transaction failed
 		/*printf("Failed to read from the i2c bus.\n");
 		errnum = errno;
@@ -179,13 +179,14 @@ char* Pca9685_read(Pca9685 *const me,uint8_t num_bytes){
 
 
 void pca9685_close(Pca9685 *const me){
-	if ((me->filerd_i2c = fclose(me->filerd_i2c)) < 0)
+	close(1);
+	if (close(me->filerd_pca9685)< 0)
 	{
 		//ERROR HANDLING: you can check errno to see what went wrong
 		//printf("Failed to close the i2c bus\n");
 		
 	}
-	if ((me->filewr_i2c = fclose(me->filewr_i2c)) < 0)
+	if (close(me->filewr_pca9685) < 0)
 	{
 		//ERROR HANDLING: you can check errno to see what went wrong
 		//printf("Failed to close the i2c bus\n");
@@ -203,6 +204,10 @@ char* Pca9685_set_all_pwm(Pca9685 *const me, uint8_t channel, uint8_t value){
 		
 	Pca9685_write(me,0xfc, value);
 	return NULL;
+}
+
+int main(void){
+	
 }
 
 

@@ -91,14 +91,15 @@ typedef struct{
 	char res[32];
 }Pca9685;
 
-/*AlasI2C constructor & operations */
+/*Pca9685 constructor & operations */
 void Pca9685_ctor(Pca9685 *const me, uint32_t address);
+void Pca9685_set_i2c_addr(Pca9685 *const me, uint32_t addr);
 void Pca9685_init(Pca9685 *const me, uint32_t addr);
-int Pca9685_write(Pca9685 *const me, char* reg, int cmd);
+int Pca9685_write(Pca9685 *const me, uint8_t reg, uint8_t val);
 char* Pca9685_read(Pca9685 *const me, uint8_t num_bytes);
 int Pca9685_set_pwm_freq(Pca9685 *const me, char* cmd);
-char* Pca9685_set_pwm(Pca9685 *const me, uint8_t num_bytes);
-char* Pca9685_set_all_pwm(Pca9685 *const me, char* str);
+char* Pca9685_set_pwm(Pca9685 *const me, uint8_t channel, uint8_t value);
+char* Pca9685_set_all_pwm(Pca9685 *const me, uint8_t channel, uint8_t value);
 void Pca9685_close(Pca9685 *const me);
 void Pca9685_software_reset(Pca9685 *const me, char* string);
 
